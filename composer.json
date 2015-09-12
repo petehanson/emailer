@@ -1,0 +1,9 @@
+{
+	"require": {
+		"codeception/codeception": "*",
+		"swiftmailer/swiftmailer": ">=5.4.1"
+	},
+	"autoload": {
+		"psr-4": { "UAR\\": "src/" }
+	}
+}
