@@ -1,0 +1,14 @@
+{
+  "tags": ["replace1","replace2"],
+  "tagOpening": "{{",
+  "tagClosing": "}}",
+  "fromEmail": "sender@example.com",
+  "fromName": "Sender Name",
+  "subject": "This is test email 2 subject line {{replace1}}",
+  "bodies": [
+    {
+      "contents": "This is the test email 2 body {{replace2}}",
+      "contentType": "text/plain"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "tags": [],
+  "tagOpening": "{{",
+  "tagClosing": "}}",
+  "fromEmail": "sender@example.com",
+  "fromName": "Sender Name",
+  "subject": "This is test email 1 subject line",
+  "bodies": [
+    {
+      "contents": "This is the test email 1 body",
+      "contentType": "text/plain"
+    }
+  ]
+}
