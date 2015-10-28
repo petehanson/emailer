@@ -11,6 +11,7 @@ class MessageTest extends \Codeception\TestCase\Test
     protected $file1 = null;
     protected $file2 = null;
     protected $simpleFile = null;
+    protected $fromObject = null;
     protected $emptyFile = null;
     protected $fileNotFound = null;
 
@@ -22,6 +23,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->file2 = $dataPath . "testemail2.json";
         $this->emptyFile = $dataPath . "empty.json";
         $this->simpleFile = $dataPath . "simpletest.json";
+        $this->fromObject = $dataPath . "fromobject.json";
         $this->fileNotFound = $dataPath . "doesnotexist.json";
     }
 
@@ -43,12 +45,13 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->assertEquals("This is test email 1 subject line",$message->getSubject());
         $this->assertEquals("This is the test email 1 body",$message->getBody());
 
-        /*
         $from = $message->getFrom();
-        codecept_debug($from);
+        $emails = array_keys($from);
+        $email = $emails[0];
+        $name = $from[$email];
 
-        $this->assertEquals("",$message->getFrom());
-        */
+        $this->assertEquals("sender@example.com",$email);
+        $this->assertEquals("Sender Name",$name);
 
     }
 
@@ -67,7 +70,27 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->assertEquals("This is simple email subject line",$message->getSubject());
         $this->assertEquals("This is a simple email test",$message->getBody());
 
+        $from = $message->getFrom();
+        $emails = array_keys($from);
+        $email = $emails[0];
+
+        $this->assertEquals("sender@example.com",$email);
+
     }
+
+    public function testFromObject() {
+        $message = new \UAR\Message($this->fromObject);
+
+        $from = $message->getFrom();
+        $emails = array_keys($from);
+        $email = $emails[0];
+        $name = $from[$email];
+
+        $this->assertEquals("sender@example.com",$email);
+        $this->assertEquals("Sender Person",$name);
+
+    }
+
 
     /**
      * @expectedException Exception
@@ -75,4 +98,5 @@ class MessageTest extends \Codeception\TestCase\Test
     public function testConfigNotFoundException() {
         $message = new \UAR\Message($this->fileNotFound);
     }
+
 }

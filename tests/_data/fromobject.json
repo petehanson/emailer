@@ -1,0 +1,6 @@
+{
+  "to": "recipient@example.com",
+  "from": {"email": "sender@example.com", "name": "Sender Person"},
+  "subject": "This is simple email subject line",
+  "body": "This is a simple email test"
+}

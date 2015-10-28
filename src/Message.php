@@ -63,7 +63,7 @@ class Message extends \Swift_Message {
     }
 
     protected function performReplacement() {
-        $subject = $this->data->subject;
+        $subject = $this->buildSubject();
         $bodies = array();
 
         if (isset($this->data->body)) {
@@ -79,6 +79,7 @@ class Message extends \Swift_Message {
 
         foreach ($this->replacements as $key=>$value) {
             $searchString = $this->openingTag . $key . $this->closingTag;
+
             $subject = str_replace($searchString,$value,$subject);
 
             foreach ($bodies as &$body) {
@@ -95,17 +96,65 @@ class Message extends \Swift_Message {
         }
 
 
-        // NEXT:  ADD IN support for from
 
-        $from = array($this->data->fromEmail => $this->data->fromName);
-
-        $this->setFrom($from);
+        $from = $this->buildFrom();
+        if ($from) {
+            $this->setFrom($from);
+        }
 
     }
 
     public function replace($key,$value) {
         $this->replacements[$key] = $value;
         $this->performReplacement();
+    }
+
+    protected function buildSubject() {
+        $subject = null;
+
+        if (isset($this->data->subject) && is_string($this->data->subject)) {
+            $subject = $this->data->subject;
+        }
+        return $subject;
+    }
+
+    protected function buildFrom() {
+
+        $email = null;
+        $name = null;
+
+        if (isset($this->data->from) && is_string($this->data->from)) {
+            $email = $this->data->from;
+        }
+
+        if (isset($this->data->from->email) && is_string($this->data->from->email)) {
+            $email = $this->data->from->email;
+        }
+
+        if (isset($this->data->from->name) && is_string($this->data->from->name)) {
+            $name = $this->data->from->name;
+        }
+
+        if (isset($this->data->fromEmail) && is_string($this->data->fromEmail)) {
+            $email= $this->data->fromEmail;
+        }
+
+        if (isset($this->data->fromName) && is_string($this->data->fromName)) {
+            $name= $this->data->fromName;
+        }
+
+
+        if ($email) {
+
+            if ($name) {
+               return array($email => $name);
+            } else {
+               return array($email);
+            }
+
+        } else {
+            return null;
+        }
     }
 
 }
