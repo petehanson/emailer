@@ -1,8 +1,9 @@
 {
-  "tags": ["replace1","replace2"],
+  "tags": ["replace1","replace2","replace3","replace4"],
   "tagOpening": "{{",
   "tagClosing": "}}",
-  "fromEmail": "sender@example.com",
+  "to": [{"email": "person1@example.com", "name": "Person One"}, {"email": "{{replace3}}", "name": "Person Two"}],
+  "fromEmail": "{{replace4}}",
   "fromName": "Sender Name",
   "subject": "This is test email 2 subject line {{replace1}}",
   "bodies": [

@@ -53,6 +53,15 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->assertEquals("sender@example.com",$email);
         $this->assertEquals("Sender Name",$name);
 
+
+        $recipients = $message->getTo();
+        $emails= array_keys($recipients);
+        $to1 = $emails[0];
+        $to2 = $emails[1];
+
+        $this->assertEquals("person1@example.com",$to1);
+        $this->assertEquals("person2@example.com",$to2);
+
     }
 
 
@@ -60,8 +69,30 @@ class MessageTest extends \Codeception\TestCase\Test
         $message = new \UAR\Message($this->file2);
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
+        $message->replace("replace3","person2@example.com");
+        $message->replace("replace4","sender@example.com");
+
         $this->assertEquals("This is test email 2 subject line test1",$message->getSubject());
         $this->assertEquals("This is the test email 2 body test2",$message->getBody());
+
+
+        $recipients = $message->getTo();
+        $emails= array_keys($recipients);
+        $to1 = $emails[0];
+        $to2 = $emails[1];
+
+        $this->assertEquals("person1@example.com",$to1);
+        $this->assertEquals("Person One",$recipients[$to1]);
+        $this->assertEquals("person2@example.com",$to2);
+        $this->assertEquals("Person Two",$recipients[$to2]);
+
+        $from = $message->getFrom();
+        $emails = array_keys($from);
+        $email = $emails[0];
+        $name = $from[$email];
+
+        $this->assertEquals("sender@example.com",$email);
+        $this->assertEquals("Sender Name",$name);
     }
 
     public function testSimpleEmail() {
@@ -75,6 +106,12 @@ class MessageTest extends \Codeception\TestCase\Test
         $email = $emails[0];
 
         $this->assertEquals("sender@example.com",$email);
+
+        $recipients = $message->getTo();
+        $emails= array_keys($recipients);
+        $to = $emails[0];
+
+        $this->assertEquals("recipient@example.com",$to);
 
     }
 

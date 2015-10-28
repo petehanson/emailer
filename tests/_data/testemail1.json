@@ -2,6 +2,7 @@
   "tags": [],
   "tagOpening": "{{",
   "tagClosing": "}}",
+  "to": ["person1@example.com","person2@example.com"],
   "fromEmail": "sender@example.com",
   "fromName": "Sender Name",
   "subject": "This is test email 1 subject line",

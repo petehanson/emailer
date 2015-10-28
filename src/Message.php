@@ -23,8 +23,6 @@ class Message extends \Swift_Message {
 
         $this->data = json_decode($json);
 
-        codecept_debug($this->data);
-
         $subject = null;
         $body = null;
         $contentType = null;
@@ -63,43 +61,42 @@ class Message extends \Swift_Message {
     }
 
     protected function performReplacement() {
+
+        // get parameters from the config
+        $recipients = $this->buildTo();
+        $from = $this->buildFrom();
         $subject = $this->buildSubject();
-        $bodies = array();
+        $bodies = $this->buildBodies();
 
-        if (isset($this->data->body)) {
-            array_push($bodies,array("content"=>$this->data->body,"type"=>"text/html"));
-        }
-
-        if (isset($this->data->bodies)) {
-            foreach ($this->data->bodies as $body) {
-                array_push($bodies,array("content"=>$body->contents,"type"=>$body->contentType));
-            }
-        }
-
-
+        // do any replacements
         foreach ($this->replacements as $key=>$value) {
             $searchString = $this->openingTag . $key . $this->closingTag;
 
-            $subject = str_replace($searchString,$value,$subject);
+            $recipients = $this->replaceTo($recipients,$searchString,$value);
+            $from = $this->replaceFrom($from,$searchString,$value);
+            $subject = $this->replaceSubject($subject,$searchString,$value);
+            $bodies = $this->replaceBodies($bodies,$searchString,$value);
 
-            foreach ($bodies as &$body) {
-                $body['content'] = str_replace($searchString,$value,$body['content']);
+        }
+
+
+        // set values on Message object
+        if ($subject !== null) {
+            $this->setSubject($subject);
+        }
+
+        if ($bodies !== null) {
+            foreach ($bodies as $body) {
+                $this->setBody($body['content'],$body['type']);
             }
         }
 
-        codecept_debug($bodies);
-
-        $this->setSubject($subject);
-
-        foreach ($bodies as $body) {
-            $this->setBody($body['content'],$body['type']);
+        if ($from !== null) {
+            $this->setFrom($from);
         }
 
-
-
-        $from = $this->buildFrom();
-        if ($from) {
-            $this->setFrom($from);
+        if ($recipients !== null) {
+            $this->setTo($recipients);
         }
 
     }
@@ -116,6 +113,67 @@ class Message extends \Swift_Message {
             $subject = $this->data->subject;
         }
         return $subject;
+    }
+
+    protected function replaceSubject($subject,$searchString,$replaceValue) {
+        if ($subject !== null) {
+            $subject = str_replace($searchString,$replaceValue,$subject);
+        }
+
+        return $subject;
+    }
+
+    protected function buildTo() {
+        $recipients = null;
+
+        if (isset($this->data->to) && is_string($this->data->to)) {
+            $recipients = array();
+            array_push($recipients,$this->data->to);
+        }
+
+        if (isset($this->data->to) && is_array($this->data->to)) {
+            $recipients = array();
+
+
+            foreach ($this->data->to as $recipient) {
+                if (is_string($recipient)) {
+                    array_push($recipients,$recipient);
+                }
+
+                if (is_object($recipient)) {
+                    $recipients[$recipient->email] = $recipient->name;
+                }
+            }
+        }
+
+        return $recipients;
+    }
+
+    protected function replaceTo($recipients,$searchString,$replaceValue) {
+
+        if ($recipients !== null) {
+
+            $newTo = array();
+
+            foreach ($recipients as $key=>$value) {
+                $key = str_replace($searchString,$replaceValue,$key);
+                $value = str_replace($searchString,$replaceValue,$value);
+
+                if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
+                    continue;
+                }
+
+                $newTo[$key] = $value;
+            }
+
+            $recipients = $newTo;
+
+            if (count($recipients) == 0) {
+                $recipients = null;
+            }
+        }
+
+        return $recipients;
     }
 
     protected function buildFrom() {
@@ -155,6 +213,61 @@ class Message extends \Swift_Message {
         } else {
             return null;
         }
+    }
+
+    protected function replaceFrom($from,$searchString,$replaceValue) {
+
+        if ($from !== null) {
+
+            $newFrom = array();
+
+            foreach ($from as $key=>$value) {
+                $key = str_replace($searchString,$replaceValue,$key);
+                $value = str_replace($searchString,$replaceValue,$value);
+
+                if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
+                    continue;
+                }
+
+                $newFrom[$key] = $value;
+            }
+
+            $from = $newFrom;
+
+            if (count($from) == 0) {
+                $from = null;
+            }
+        }
+
+        return $from;
+    }
+
+    protected function buildBodies() {
+        $bodies = null;
+
+        if (isset($this->data->body) && is_string($this->data->body)) {
+            $bodies = array();
+            array_push($bodies,array("content"=>$this->data->body,"type"=>"text/html"));
+        }
+
+        if (isset($this->data->bodies) && is_array($this->data->bodies)) {
+            $bodies = array();
+            foreach ($this->data->bodies as $body) {
+                array_push($bodies,array("content"=>$body->contents,"type"=>$body->contentType));
+            }
+        }
+
+        return $bodies;
+    }
+
+    protected function replaceBodies($bodies,$searchString,$replaceValue) {
+        if ($bodies !== null) {
+            foreach ($bodies as &$body) {
+                $body['content'] = str_replace($searchString,$replaceValue,$body['content']);
+            }
+        }
+
+        return $bodies;
     }
 
 }
