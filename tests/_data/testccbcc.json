@@ -1,0 +1,17 @@
+{
+  "tags": ["replace1","replace2","replace3","replace4"],
+  "tagOpening": "{{",
+  "tagClosing": "}}",
+  "to": [{"email": "person1@example.com", "name": "Person One"}, {"email": "{{replace3}}", "name": "Person Two"}],
+  "cc": "cc1@example.com",
+  "bcc": "bcc1@example.com",
+  "fromEmail": "{{replace4}}",
+  "fromName": "Sender Name",
+  "subject": "This is test ccbcc subject line",
+  "bodies": [
+    {
+      "contents": "This is the test email ccbcc body",
+      "contentType": "text/plain"
+    }
+  ]
+}

@@ -9,19 +9,15 @@ class Message extends \Swift_Message {
     protected $openingTag = '{{';
     protected $closingTag = '}}';
 
-
-    public function __construct($messageConfigPath) {
-
-        if (!file_exists($messageConfigPath)) {
-            throw new \Exception("JSON config {$messageConfigPath} not found");
-        }
-
-        $json = file_get_contents($messageConfigPath);
-        if (!$json) {
-            throw new \Exception("JSON config {$messageConfigPath} is empty");
-        }
+    //TODO:  make this load a JSON file instead, by using a loader class
+    public function __construct($json) {
 
         $this->data = json_decode($json);
+
+        if ($this->data === false || $this->data === null) {
+            throw new \Exception("JSON passed to the Message object was invalid");
+        }
+
 
         $subject = null;
         $body = null;
@@ -63,7 +59,9 @@ class Message extends \Swift_Message {
     protected function performReplacement() {
 
         // get parameters from the config
-        $recipients = $this->buildTo();
+        $tos = $this->buildRecipients((isset($this->data->to) ? $this->data->to : null));
+        $ccs = $this->buildRecipients((isset($this->data->cc) ? $this->data->cc : null));
+        $bccs = $this->buildRecipients((isset($this->data->bcc) ? $this->data->bcc : null));
         $from = $this->buildFrom();
         $subject = $this->buildSubject();
         $bodies = $this->buildBodies();
@@ -72,7 +70,9 @@ class Message extends \Swift_Message {
         foreach ($this->replacements as $key=>$value) {
             $searchString = $this->openingTag . $key . $this->closingTag;
 
-            $recipients = $this->replaceTo($recipients,$searchString,$value);
+            $tos = $this->replaceRecipients($tos,$searchString,$value);
+            $ccs = $this->replaceRecipients($ccs,$searchString,$value);
+            $bccs = $this->replaceRecipients($bccs,$searchString,$value);
             $from = $this->replaceFrom($from,$searchString,$value);
             $subject = $this->replaceSubject($subject,$searchString,$value);
             $bodies = $this->replaceBodies($bodies,$searchString,$value);
@@ -95,8 +95,16 @@ class Message extends \Swift_Message {
             $this->setFrom($from);
         }
 
-        if ($recipients !== null) {
-            $this->setTo($recipients);
+        if ($tos !== null) {
+            $this->setTo($tos);
+        }
+
+        if ($ccs !== null) {
+            $this->setCc($ccs);
+        }
+
+        if ($bccs !== null) {
+            $this->setBcc($bccs);
         }
 
     }
@@ -123,19 +131,19 @@ class Message extends \Swift_Message {
         return $subject;
     }
 
-    protected function buildTo() {
+    protected function buildRecipients($field) {
         $recipients = null;
 
-        if (isset($this->data->to) && is_string($this->data->to)) {
+        if (isset($field) && is_string($field)) {
             $recipients = array();
-            array_push($recipients,$this->data->to);
+            array_push($recipients,$field);
         }
 
-        if (isset($this->data->to) && is_array($this->data->to)) {
+        if (isset($field) && is_array($field)) {
             $recipients = array();
 
 
-            foreach ($this->data->to as $recipient) {
+            foreach ($field as $recipient) {
                 if (is_string($recipient)) {
                     array_push($recipients,$recipient);
                 }
@@ -149,7 +157,7 @@ class Message extends \Swift_Message {
         return $recipients;
     }
 
-    protected function replaceTo($recipients,$searchString,$replaceValue) {
+    protected function replaceRecipients($recipients,$searchString,$replaceValue) {
 
         if ($recipients !== null) {
 

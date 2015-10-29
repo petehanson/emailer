@@ -14,6 +14,7 @@ class MessageTest extends \Codeception\TestCase\Test
     protected $fromObject = null;
     protected $emptyFile = null;
     protected $fileNotFound = null;
+    protected $ccbcc = null;
 
     protected function _before()
     {
@@ -25,23 +26,17 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->simpleFile = $dataPath . "simpletest.json";
         $this->fromObject = $dataPath . "fromobject.json";
         $this->fileNotFound = $dataPath . "doesnotexist.json";
+        $this->ccbcc = $dataPath . "testccbcc.json";
     }
 
     protected function _after()
     {
     }
 
-    /**
-     * @expectedException Exception
-     */
-    public function testEmptyJson() {
-
-        $message = new \UAR\Message($this->emptyFile);
-    }
 
     // tests
     public function testEmail1() {
-        $message = new \UAR\Message($this->file1);
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->file1));
         $this->assertEquals("This is test email 1 subject line",$message->getSubject());
         $this->assertEquals("This is the test email 1 body",$message->getBody());
 
@@ -66,7 +61,7 @@ class MessageTest extends \Codeception\TestCase\Test
 
 
     public function testEmail2() {
-        $message = new \UAR\Message($this->file2);
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->file2));
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
@@ -96,7 +91,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testSimpleEmail() {
-        $message = new \UAR\Message($this->simpleFile);
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->simpleFile));
 
         $this->assertEquals("This is simple email subject line",$message->getSubject());
         $this->assertEquals("This is a simple email test",$message->getBody());
@@ -116,7 +111,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testFromObject() {
-        $message = new \UAR\Message($this->fromObject);
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->fromObject));
 
         $from = $message->getFrom();
         $emails = array_keys($from);
@@ -128,12 +123,69 @@ class MessageTest extends \Codeception\TestCase\Test
 
     }
 
-
     /**
      * @expectedException Exception
      */
-    public function testConfigNotFoundException() {
-        $message = new \UAR\Message($this->fileNotFound);
+    public function testInvalidJson() {
+        $message = new \UAR\Message(null);
     }
+
+    public function testCcBcc() {
+
+        $originalJson = \UAR\MessageConfig::load($this->ccbcc);
+
+        $message = new \UAR\Message($originalJson);
+
+        $message->replace("replace1","test1");
+        $message->replace("replace2","test2");
+        $message->replace("replace3","person2@example.com");
+        $message->replace("replace4","sender@example.com");
+
+        $from = $message->getFrom();
+        $emails = array_keys($from);
+        $email = $emails[0];
+        $name = $from[$email];
+
+        $this->assertEquals("sender@example.com",$email);
+        $this->assertEquals("Sender Name",$name);
+
+        $ccs = $message->getCc();
+        $emails = array_keys($ccs);
+        $email = $emails[0];
+
+        $this->assertEquals("cc1@example.com",$email);
+
+        $bccs = $message->getBcc();
+        $emails = array_keys($bccs);
+        $email = $emails[0];
+
+        $this->assertEquals("bcc1@example.com",$email);
+
+        // test the CC system with the alternate CC recipient format
+        $obj = json_decode($originalJson);
+        $cc1 = new stdClass();
+        $cc1->email = "cc1@example.com";
+        $cc1->name = "CC One";
+        $obj->cc = array($cc1);
+        $json = json_encode($obj);
+
+        $message = new \UAR\Message($json);
+        $message->replace("replace1","test1");
+        $message->replace("replace2","test2");
+        $message->replace("replace3","person2@example.com");
+        $message->replace("replace4","sender@example.com");
+
+        $ccs = $message->getCc();
+        $emails = array_keys($ccs);
+        $email = $emails[0];
+
+        $this->assertEquals("cc1@example.com",$email);
+        $this->assertEquals("CC One",$ccs[$email]);
+
+
+
+    }
+
+
 
 }

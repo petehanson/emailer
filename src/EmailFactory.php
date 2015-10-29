@@ -21,7 +21,7 @@ class EmailFactory {
         $config = self::config();
         $path = $config->messagePath($messageName);
 
-        $message = new Message($path);
+        $message = new Message(\UAR\MessageConfig::load($path));
         return $message;
     }
 
