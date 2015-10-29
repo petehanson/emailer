@@ -167,6 +167,15 @@ class MessageTest extends \Codeception\TestCase\Test
         $cc1->email = "cc1@example.com";
         $cc1->name = "CC One";
         $obj->cc = array($cc1);
+
+        $bcc1 = new stdClass();
+        $bcc1->email = "bcc1@example.com";
+        $bcc1->name = "BCC One";
+
+        $bcc2 = new stdClass();
+        $bcc2->email = "bcc2@example.com";
+        $bcc2->name = "BCC Two";
+        $obj->bcc = array($bcc1,$bcc2);
         $json = json_encode($obj);
 
         $message = new \UAR\Message($json);
@@ -182,8 +191,31 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->assertEquals("cc1@example.com",$email);
         $this->assertEquals("CC One",$ccs[$email]);
 
+        $bccs = $message->getBcc();
+        $emails = array_keys($bccs);
+        $email1 = $emails[0];
+        $email2 = $emails[1];
 
+        $this->assertEquals("bcc1@example.com",$email1);
+        $this->assertEquals("BCC One",$bccs[$email1]);
+        $this->assertEquals("bcc2@example.com",$email2);
+        $this->assertEquals("BCC Two",$bccs[$email2]);
 
+        // test no CC or BCC fields
+
+        $obj = json_decode($originalJson);
+        unset($obj->cc);
+        unset($obj->bcc);
+        $json = json_encode($obj);
+
+        $message = new \UAR\Message($json);
+        $message->replace("replace1","test1");
+        $message->replace("replace2","test2");
+        $message->replace("replace3","person2@example.com");
+        $message->replace("replace4","sender@example.com");
+
+        $this->assertNull($message->getCc());
+        $this->assertNull($message->getBcc());
     }
 
 
