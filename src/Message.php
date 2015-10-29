@@ -9,7 +9,6 @@ class Message extends \Swift_Message {
     protected $openingTag = '{{';
     protected $closingTag = '}}';
 
-    //TODO:  make this load a JSON file instead, by using a loader class
     public function __construct($json) {
 
         $this->data = json_decode($json);

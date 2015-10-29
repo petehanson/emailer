@@ -24,4 +24,13 @@ class FactoryTest extends \Codeception\TestCase\Test
         $this->assertInstanceOf("\UAR\Message",$message);
 
     }
+
+    public function testMessageSend() {
+
+        $message = \UAR\EmailFactory::message($this->testEmail1);
+        $this->assertInstanceOf("\UAR\Message",$message);
+
+        $result = \UAR\EmailFactory::send($message);
+        $this->assertTrue($result);
+    }
 }
