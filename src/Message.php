@@ -2,7 +2,7 @@
 
 namespace UAR;
 
-class Message extends \Swift_Message {
+class Message extends \Swift_Message implements \UAR\MessageInterface {
 
     protected $data;
     protected $replacements = array();

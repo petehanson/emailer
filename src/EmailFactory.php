@@ -4,6 +4,7 @@ namespace UAR;
 
 use \UAR\Message;
 
+//TODO: Look to make parts of this abstract, so it has to be extended
 class EmailFactory {
 
     public static function config() {
@@ -25,4 +26,25 @@ class EmailFactory {
         return $message;
     }
 
+    public static function send(\UAR\MessageInterface $message) {
+
+        $config = self::config();
+
+        $transport = \Swift_SmtpTransport::newInstance($config->host,$config->port);
+
+        if ($config->username) {
+            $transport->setUsername($config->username);
+        }
+
+        if ($config->password) {
+            $transport->setPassword($config->password);
+        }
+
+        if ($config->encryption) {
+            $transport->setEncryption($config->encryption);
+        }
+
+        $mailer = \Swift_Mailer::newInstance($transport);
+        return $mailer->send($message);
+    }
 }

@@ -17,6 +17,7 @@ class ConfigTest extends \Codeception\TestCase\Test
         $config->port = "25";
         $config->username = "user";
         $config->password = "pass";
+        $config->transport = "smtp";
         $config->messageConfigLocation = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "_data");
 
         $this->config = $config;
@@ -37,6 +38,7 @@ class ConfigTest extends \Codeception\TestCase\Test
         $this->assertEquals("25",$config->port);
         $this->assertEquals("user",$config->username);
         $this->assertEquals("pass",$config->password);
+        $this->assertEquals("smtp",$config->transport);
     }
 
     public function testDefaultConfig() {
@@ -44,6 +46,7 @@ class ConfigTest extends \Codeception\TestCase\Test
 
         $this->assertEquals("localhost",$config->host);
         $this->assertEquals("25",$config->port);
+        $this->assertEquals("mail",$config->transport);
     }
 
     public function testMessageConfig() {
@@ -53,6 +56,12 @@ class ConfigTest extends \Codeception\TestCase\Test
         $path = $config->messagePath($messageName);
 
         $this->assertEquals(realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "_data" . DIRECTORY_SEPARATOR . "testemail1.json"),$path);
+    }
 
+    public function testTransports() {
+        $config = $this->config;
+
+        $transport = $config->getTransport();
+        $this->assertInstanceOf("\Swift_SmtpTransport",$transport);
     }
 }
