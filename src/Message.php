@@ -2,6 +2,8 @@
 
 namespace UAR;
 
+use Swift_Message;
+
 class Message extends \Swift_Message implements \UAR\MessageInterface {
 
     protected $data;
