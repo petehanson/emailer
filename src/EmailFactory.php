@@ -3,6 +3,9 @@
 namespace UAR;
 
 use \UAR\Message;
+use \UAR\MessageConfig;
+use \UAR\MessageInterface;
+use \UAR\EmailerConfig;
 
 //TODO: Look to make parts of this abstract, so it has to be extended
 class EmailFactory {
