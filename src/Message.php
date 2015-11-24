@@ -35,7 +35,7 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
         $this->m = new \Mustache_Engine;
 
-        //$this->performReplacement();
+        $this->performReplacement();
 
 
     }
@@ -119,9 +119,6 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
     public function replace($key,$value) {
         $this->replacements[$key] = $value;
-    }
-
-    public function render() {
         $this->performReplacement();
     }
 

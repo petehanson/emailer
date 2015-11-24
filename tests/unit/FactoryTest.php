@@ -28,11 +28,9 @@ class FactoryTest extends \Codeception\TestCase\Test
     public function testMessageSend() {
 
         $message = \UAR\EmailFactory::message($this->testEmail1);
-        $message->render();
         $this->assertInstanceOf("\UAR\Message",$message);
 
         $result = \UAR\EmailFactory::send($message);
-        $message->render();
         $this->assertEquals(2,$result);
     }
 }
