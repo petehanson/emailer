@@ -3,6 +3,7 @@
 namespace UAR;
 
 use Swift_Message;
+use Mustache_Engine;
 
 class Message extends \Swift_Message implements \UAR\MessageInterface {
 
@@ -10,6 +11,8 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
     protected $replacements = array();
     protected $openingTag = '{{';
     protected $closingTag = '}}';
+
+    protected $m;
 
     public function __construct($json) {
 
@@ -29,7 +32,12 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         //public function __construct($subject = null, $body = null, $contentType = null, $charset = null)
 
         $this->setupInitialData();
-        $this->performReplacement();
+
+        $this->m = new \Mustache_Engine;
+
+        //$this->performReplacement();
+
+
     }
 
     protected function setupInitialData() {
@@ -59,6 +67,9 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
     protected function performReplacement() {
 
+
+        //echo $m->render('Hello, {{ planet }}!', array('planet' => 'world')); // Hello, world!
+
         // get parameters from the config
         $tos = $this->buildRecipients((isset($this->data->to) ? $this->data->to : null));
         $ccs = $this->buildRecipients((isset($this->data->cc) ? $this->data->cc : null));
@@ -67,18 +78,14 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         $subject = $this->buildSubject();
         $bodies = $this->buildBodies();
 
+
         // do any replacements
-        foreach ($this->replacements as $key=>$value) {
-            $searchString = $this->openingTag . $key . $this->closingTag;
-
-            $tos = $this->replaceRecipients($tos,$searchString,$value);
-            $ccs = $this->replaceRecipients($ccs,$searchString,$value);
-            $bccs = $this->replaceRecipients($bccs,$searchString,$value);
-            $from = $this->replaceFrom($from,$searchString,$value);
-            $subject = $this->replaceSubject($subject,$searchString,$value);
-            $bodies = $this->replaceBodies($bodies,$searchString,$value);
-
-        }
+        $tos = $this->replaceRecipients($tos);
+        $ccs = $this->replaceRecipients($ccs);
+        $bccs = $this->replaceRecipients($bccs);
+        $from = $this->replaceFrom($from);
+        $subject = $this->replaceSubject($subject);
+        $bodies = $this->replaceBodies($bodies);
 
 
         // set values on Message object
@@ -112,6 +119,9 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
     public function replace($key,$value) {
         $this->replacements[$key] = $value;
+    }
+
+    public function render() {
         $this->performReplacement();
     }
 
@@ -124,9 +134,10 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         return $subject;
     }
 
-    protected function replaceSubject($subject,$searchString,$replaceValue) {
+    protected function replaceSubject($subject) {
         if ($subject !== null) {
-            $subject = str_replace($searchString,$replaceValue,$subject);
+
+            $subject = $this->m->render($subject,$this->replacements);
         }
 
         return $subject;
@@ -137,7 +148,7 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
         if (isset($field) && is_string($field)) {
             $recipients = array();
-            array_push($recipients,$field);
+            array_push($recipients,array("email"=>$field,"name"=>null));
         }
 
         if (isset($field) && is_array($field)) {
@@ -146,11 +157,11 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
 
             foreach ($field as $recipient) {
                 if (is_string($recipient)) {
-                    array_push($recipients,$recipient);
+                    array_push($recipients,array("email"=>$recipient,"name"=>null));
                 }
 
                 if (is_object($recipient)) {
-                    $recipients[$recipient->email] = $recipient->name;
+                    array_push($recipients,array("email"=>$recipient->email,"name"=>$recipient->name));
                 }
             }
         }
@@ -158,21 +169,30 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         return $recipients;
     }
 
-    protected function replaceRecipients($recipients,$searchString,$replaceValue) {
+    protected function replaceRecipients($recipients) {
 
         if ($recipients !== null) {
 
             $newTo = array();
 
-            foreach ($recipients as $key=>$value) {
-                $key = str_replace($searchString,$replaceValue,$key);
-                $value = str_replace($searchString,$replaceValue,$value);
+            foreach ($recipients as $recipient) {
 
-                if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
+                $email = $recipient['email'];
+                $name = $recipient['name'];
+
+                $email = $this->m->render($email,$this->replacements);
+                $name = $this->m->render($name,$this->replacements);
+
+                if ($email == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
                     continue;
                 }
 
-                $newTo[$key] = $value;
+                if ($email && $name) {
+                    $newTo[$email] = $name;
+                } else {
+                    array_push($newTo,$email);
+                }
+
             }
 
             $recipients = $newTo;
@@ -216,7 +236,7 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
             if ($name) {
                return array($email => $name);
             } else {
-               return array($email);
+               return $email;
             }
 
         } else {
@@ -224,27 +244,35 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         }
     }
 
-    protected function replaceFrom($from,$searchString,$replaceValue) {
+    protected function replaceFrom($from) {
 
         if ($from !== null) {
 
-            $newFrom = array();
 
-            foreach ($from as $key=>$value) {
-                $key = str_replace($searchString,$replaceValue,$key);
-                $value = str_replace($searchString,$replaceValue,$value);
+            if (is_array($from)) {
+                // from is email => name
 
-                if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
-                    continue;
+                $newFrom = array();
+
+                foreach ($from as $key=>$value) {
+                    $key = $this->m->render($key,$this->replacements);
+                    $value = $this->m->render($value,$this->replacements);
+
+                    if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
+                        continue;
+                    }
+
+                    $newFrom[$key] = $value;
                 }
 
-                $newFrom[$key] = $value;
-            }
+                $from = $newFrom;
 
-            $from = $newFrom;
-
-            if (count($from) == 0) {
-                $from = null;
+                if (count($from) == 0) {
+                    $from = null;
+                }
+            } else {
+                // from is just an email string
+                $from = $this->m->render($from,$this->replacements);
             }
         }
 
@@ -269,10 +297,11 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         return $bodies;
     }
 
-    protected function replaceBodies($bodies,$searchString,$replaceValue) {
+    protected function replaceBodies($bodies) {
         if ($bodies !== null) {
             foreach ($bodies as &$body) {
-                $body['content'] = str_replace($searchString,$replaceValue,$body['content']);
+
+                $body['content'] = $this->m->render($body['content'],$this->replacements);
             }
         }
 

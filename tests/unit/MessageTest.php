@@ -37,6 +37,7 @@ class MessageTest extends \Codeception\TestCase\Test
 
     public function testConditional() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
+        $message->render();
         $this->assertEquals("Conditional subject line",$message->getSubject());
 
 
@@ -45,6 +46,8 @@ class MessageTest extends \Codeception\TestCase\Test
     // tests
     public function testEmail1() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->file1));
+        $message->render();
+
         $this->assertEquals("This is test email 1 subject line",$message->getSubject());
         $this->assertEquals("This is the test email 1 body",$message->getBody());
 
@@ -74,6 +77,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
         $message->replace("replace4","sender@example.com");
+        $message->render();
 
         $this->assertEquals("This is test email 2 subject line test1",$message->getSubject());
         $this->assertEquals("This is the test email 2 body test2",$message->getBody());
@@ -100,6 +104,7 @@ class MessageTest extends \Codeception\TestCase\Test
 
     public function testSimpleEmail() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->simpleFile));
+        $message->render();
 
         $this->assertEquals("This is simple email subject line",$message->getSubject());
         $this->assertEquals("This is a simple email test",$message->getBody());
@@ -120,6 +125,7 @@ class MessageTest extends \Codeception\TestCase\Test
 
     public function testFromObject() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->fromObject));
+        $message->render();
 
         $from = $message->getFrom();
         $emails = array_keys($from);
@@ -148,6 +154,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
         $message->replace("replace4","sender@example.com");
+        $message->render();
 
         $from = $message->getFrom();
         $emails = array_keys($from);
@@ -191,6 +198,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
         $message->replace("replace4","sender@example.com");
+        $message->render();
 
         $ccs = $message->getCc();
         $emails = array_keys($ccs);
@@ -221,6 +229,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
         $message->replace("replace4","sender@example.com");
+        $message->render();
 
         $this->assertNull($message->getCc());
         $this->assertNull($message->getBcc());
