@@ -15,6 +15,7 @@ class MessageTest extends \Codeception\TestCase\Test
     protected $emptyFile = null;
     protected $fileNotFound = null;
     protected $ccbcc = null;
+    protected $conditional = null;
 
     protected function _before()
     {
@@ -27,12 +28,19 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->fromObject = $dataPath . "fromobject.json";
         $this->fileNotFound = $dataPath . "doesnotexist.json";
         $this->ccbcc = $dataPath . "testccbcc.json";
+        $this->conditional = $dataPath . "conditional.json";
     }
 
     protected function _after()
     {
     }
 
+    public function testConditional() {
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
+        $this->assertEquals("Conditional subject line",$message->getSubject());
+
+
+    }
 
     // tests
     public function testEmail1() {

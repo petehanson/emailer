@@ -1,0 +1,15 @@
+{
+  "tags": ["replace1"],
+  "tagOpening": "{{",
+  "tagClosing": "}}",
+  "to": ["person1@example.com","person2@example.com"],
+  "fromEmail": "sender@example.com",
+  "fromName": "Sender Name",
+  "subject": "Conditional subject line",
+  "bodies": [
+    {
+      "contents": "conditional body: ",
+      "contentType": "text/plain"
+    }
+  ]
+}
