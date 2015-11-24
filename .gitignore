@@ -1,2 +1,4 @@
 .idea/
 vendor/
+tests/_output/failed
+tests/_support/_generated/*
