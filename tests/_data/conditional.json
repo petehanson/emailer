@@ -8,7 +8,7 @@
   "subject": "Conditional subject line",
   "bodies": [
     {
-      "contents": "conditional body: ",
+      "contents": "conditional body: {{#hasAddress}}Yes{{/hasAddress}}{{^hasAddress}}No{{/hasAddress}}",
       "contentType": "text/plain"
     }
   ]
