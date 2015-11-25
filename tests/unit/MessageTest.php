@@ -38,7 +38,15 @@ class MessageTest extends \Codeception\TestCase\Test
     public function testConditional() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
         $this->assertEquals("Conditional subject line",$message->getSubject());
+        $message->replace("hasAddress",true);
 
+        $this->assertEquals("conditional body: Yes",$message->getBody());
+
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
+        $this->assertEquals("Conditional subject line",$message->getSubject());
+        $message->replace("hasAddress",false);
+
+        $this->assertEquals("conditional body: No",$message->getBody());
 
     }
 
