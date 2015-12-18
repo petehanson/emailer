@@ -16,6 +16,7 @@ class MessageTest extends \Codeception\TestCase\Test
     protected $fileNotFound = null;
     protected $ccbcc = null;
     protected $conditional = null;
+    protected $multibody = null;
 
     protected function _before()
     {
@@ -29,6 +30,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $this->fileNotFound = $dataPath . "doesnotexist.json";
         $this->ccbcc = $dataPath . "testccbcc.json";
         $this->conditional = $dataPath . "conditional.json";
+        $this->multibody = $dataPath . "multibody.json";
     }
 
     protected function _after()
@@ -50,7 +52,17 @@ class MessageTest extends \Codeception\TestCase\Test
 
     }
 
-    // tests
+    public function testMultiBody() {
+        $message = new \UAR\Message(\UAR\MessageConfig::load($this->multibody));
+
+        $this->assertEquals("this is the html text version",$message->getBody());
+
+        $parts = $message->getChildren();
+        $part = $parts[0];
+        $this->assertEquals("this is the plain text version",$part->getBody());
+
+    }
+
     public function testEmail1() {
         $message = new \UAR\Message(\UAR\MessageConfig::load($this->file1));
 

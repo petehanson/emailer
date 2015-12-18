@@ -94,8 +94,15 @@ class Message extends \Swift_Message implements \UAR\MessageInterface {
         }
 
         if ($bodies !== null) {
+            $bodyCount = 0;
             foreach ($bodies as $body) {
-                $this->setBody($body['content'],$body['type']);
+                if ($bodyCount == 0) {
+                    $this->setBody($body['content'],$body['type']);
+                } else {
+                    $this->addPart($body['content'],$body['type']);
+                }
+
+                $bodyCount++;
             }
         }
 
