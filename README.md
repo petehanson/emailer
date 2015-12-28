@@ -10,6 +10,28 @@ replacement in the subject and header. So if you're sending a series of emails, 
 define a tag to represent the person's first name for example and then you could replace a placeholder tag for
 first name with the actual name to generate a personalized email.
 
+Environment Variables Needed:
+
+General variables:
+emailer_driver = smtp
+emailer_message_location = ../_data/
+
+SMTP variables:
+emailer_smtp_host = localhost
+emailer_smtp_port = 1025
+emailer_smtp_username = user
+emailer_smtp_password = pass
+emailer_smtp_encryption = ssl
+
+Sendmail variables:
+emailer_sendmail_binary = /usr/bin/sendmail
+
+
+
+
+
+
+
 An example of use for the public interface:
 
 
