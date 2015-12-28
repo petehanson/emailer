@@ -5,16 +5,32 @@ namespace UAR;
 use \UAR\Message;
 use \UAR\MessageConfig;
 use \UAR\MessageInterface;
-use \UAR\EmailerConfig;
+use \UAR\Config\Smtp;
+use \UAR\Config\Sendmail;
+
+use \UAR\Exception\MissingEnvironmentDriverException;
+
 
 //TODO: Look to make parts of this abstract, so it has to be extended
 class EmailFactory {
 
     public static function config() {
-        $config = new \UAR\EmailerConfig();
-        $config->host = "localhost";
-        $config->port = "1025";
-        $config->messageConfigLocation = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "tests" . DIRECTORY_SEPARATOR . "_data");
+
+        $driver = (isset($_ENV['emailer_driver'])) ? $_ENV['emailer_driver'] : false;
+        if ($driver === false) {
+            throw new MissingEnvironmentDriverException();
+        }
+
+        switch($driver) {
+            case "sendmail":
+                $config = new Sendmail();
+                break;
+
+            case "smtp":
+            default:
+                $config = new Smtp();
+                break;
+        }
 
         return $config;
     }

@@ -11,6 +11,11 @@ class FactoryTest extends \Codeception\TestCase\Test
 
     protected function _before()
     {
+        $_ENV['emailer_driver'] = 'smtp';
+        $_ENV['emailer_message_location'] = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '_data');
+
+        $_ENV['emailer_smtp_host'] = 'localhost';
+        $_ENV['emailer_smtp_port'] = '1025';
     }
 
     protected function _after()
@@ -32,5 +37,15 @@ class FactoryTest extends \Codeception\TestCase\Test
 
         $result = \UAR\EmailFactory::send($message);
         $this->assertEquals(2,$result);
+    }
+
+    /**
+     * @expectedException \UAR\Exception\MissingEnvironmentDriverException
+     */
+    public function testMissingEnvironmentDriverException() {
+
+        unset($_ENV['emailer_driver']);
+
+        $config = \UAR\EmailFactory::config();
     }
 }
