@@ -25,17 +25,17 @@ class FactoryTest extends \Codeception\TestCase\Test
     // tests
     public function testMessageReturn()
     {
-        $message = \UAR\EmailFactory::message($this->testEmail1);
+        $message = \UAR\EmailerFactory::message($this->testEmail1);
         $this->assertInstanceOf("\UAR\Message",$message);
 
     }
 
     public function testMessageSend() {
 
-        $message = \UAR\EmailFactory::message($this->testEmail1);
+        $message = \UAR\EmailerFactory::message($this->testEmail1);
         $this->assertInstanceOf("\UAR\Message",$message);
 
-        $result = \UAR\EmailFactory::send($message);
+        $result = \UAR\EmailerFactory::send($message);
         $this->assertEquals(2,$result);
     }
 
@@ -46,6 +46,6 @@ class FactoryTest extends \Codeception\TestCase\Test
 
         unset($_ENV['emailer_driver']);
 
-        $config = \UAR\EmailFactory::config();
+        $config = \UAR\EmailerFactory::config();
     }
 }
