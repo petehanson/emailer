@@ -3,8 +3,6 @@
 namespace UAR;
 
 use \UAR\Message;
-use \UAR\MessageConfig;
-use \UAR\MessageInterface;
 use \UAR\Config\Smtp;
 use \UAR\Config\Sendmail;
 
