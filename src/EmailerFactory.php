@@ -48,20 +48,7 @@ class EmailerFactory {
     public static function send(\UAR\MessageInterface $message) {
 
         $config = self::config();
-
-        $transport = \Swift_SmtpTransport::newInstance($config->host,$config->port);
-
-        if ($config->username) {
-            $transport->setUsername($config->username);
-        }
-
-        if ($config->password) {
-            $transport->setPassword($config->password);
-        }
-
-        if ($config->encryption) {
-            $transport->setEncryption($config->encryption);
-        }
+        $transport = $config->getTransport();
 
         $mailer = \Swift_Mailer::newInstance($transport);
         return $mailer->send($message);

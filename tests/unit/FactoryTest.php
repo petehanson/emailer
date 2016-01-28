@@ -22,6 +22,11 @@ class FactoryTest extends \Codeception\TestCase\Test
     {
     }
 
+    public function testFactoryConfig() {
+        $config = \UAR\EmailerFactory::config();
+        $this->assertInstanceOf("\UAR\Config\Smtp",$config);
+    }
+
     // tests
     public function testMessageReturn()
     {
