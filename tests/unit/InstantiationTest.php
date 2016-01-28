@@ -18,9 +18,6 @@ class InstantiationTest extends \Codeception\TestCase\Test
 
     public function testInstantiation()
     {
-        $emailerConfig = new \UAR\EmailerConfig();
-        $this->assertInstanceOf("\UAR\EmailerConfig",$emailerConfig);
-
         $email = new \UAR\Message(\UAR\MessageConfig::load("tests/_data/testemail1.json"));
         $this->assertInstanceOf("\UAR\Message",$email);
         $this->assertInstanceOf("\UAR\MessageInterface",$email);
