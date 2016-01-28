@@ -1,6 +1,6 @@
 <?php
 
-namespace UAR;
+namespace UAR\Emailer;
 
 class MessageConfig {
     public static function load($path) {

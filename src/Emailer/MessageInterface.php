@@ -1,6 +1,6 @@
 <?php
 
-namespace UAR;
+namespace UAR\Emailer;
 
 interface MessageInterface {
     public function replace($key,$value);

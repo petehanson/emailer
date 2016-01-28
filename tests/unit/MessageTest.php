@@ -38,13 +38,13 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testConditional() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->conditional));
         $this->assertEquals("Conditional subject line",$message->getSubject());
         $message->replace("hasAddress",true);
 
         $this->assertEquals("conditional body: Yes",$message->getBody());
 
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->conditional));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->conditional));
         $this->assertEquals("Conditional subject line",$message->getSubject());
         $message->replace("hasAddress",false);
 
@@ -53,7 +53,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testMultiBody() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->multibody));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->multibody));
 
         $this->assertEquals("this is the html text version",$message->getBody());
 
@@ -64,7 +64,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testEmail1() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->file1));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->file1));
 
         $this->assertEquals("This is test email 1 subject line",$message->getSubject());
         $this->assertEquals("This is the test email 1 body",$message->getBody());
@@ -90,7 +90,7 @@ class MessageTest extends \Codeception\TestCase\Test
 
 
     public function testEmail2() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->file2));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->file2));
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
@@ -120,7 +120,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testSimpleEmail() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->simpleFile));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->simpleFile));
 
         $this->assertEquals("This is simple email subject line",$message->getSubject());
         $this->assertEquals("This is a simple email test",$message->getBody());
@@ -140,7 +140,7 @@ class MessageTest extends \Codeception\TestCase\Test
     }
 
     public function testFromObject() {
-        $message = new \UAR\Message(\UAR\MessageConfig::load($this->fromObject));
+        $message = new \UAR\Emailer\Message(\UAR\Emailer\MessageConfig::load($this->fromObject));
 
         $from = $message->getFrom();
         $emails = array_keys($from);
@@ -156,14 +156,14 @@ class MessageTest extends \Codeception\TestCase\Test
      * @expectedException Exception
      */
     public function testInvalidJson() {
-        $message = new \UAR\Message(null);
+        $message = new \UAR\Emailer\Message(null);
     }
 
     public function testCcBcc() {
 
-        $originalJson = \UAR\MessageConfig::load($this->ccbcc);
+        $originalJson = \UAR\Emailer\MessageConfig::load($this->ccbcc);
 
-        $message = new \UAR\Message($originalJson);
+        $message = new \UAR\Emailer\Message($originalJson);
 
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
@@ -207,7 +207,7 @@ class MessageTest extends \Codeception\TestCase\Test
         $obj->bcc = array($bcc1,$bcc2);
         $json = json_encode($obj);
 
-        $message = new \UAR\Message($json);
+        $message = new \UAR\Emailer\Message($json);
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");
@@ -237,7 +237,7 @@ class MessageTest extends \Codeception\TestCase\Test
         unset($obj->bcc);
         $json = json_encode($obj);
 
-        $message = new \UAR\Message($json);
+        $message = new \UAR\Emailer\Message($json);
         $message->replace("replace1","test1");
         $message->replace("replace2","test2");
         $message->replace("replace3","person2@example.com");

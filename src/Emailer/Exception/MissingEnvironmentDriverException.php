@@ -1,6 +1,6 @@
 <?php
 
-namespace UAR\Exception;
+namespace UAR\Emailer\Exception;
 
 class MissingEnvironmentDriverException extends \Exception {
 

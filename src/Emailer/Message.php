@@ -1,11 +1,11 @@
 <?php
 
-namespace UAR;
+namespace UAR\Emailer;
 
 use Swift_Message;
 use Mustache_Engine;
 
-class Message extends \Swift_Message implements \UAR\MessageInterface {
+class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
 
     protected $data;
     protected $replacements = array();

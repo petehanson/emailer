@@ -30,20 +30,20 @@ class MessageConfigLoaderTest extends \Codeception\TestCase\Test
      */
     public function testEmptyJson() {
 
-        $json = \UAR\MessageConfig::load($this->emptyFile);
+        $json = \UAR\Emailer\MessageConfig::load($this->emptyFile);
     }
 
     /**
      * @expectedException Exception
      */
     public function testConfigNotFoundException() {
-        $json = \UAR\MessageConfig::load($this->fileNotFound);
+        $json = \UAR\Emailer\MessageConfig::load($this->fileNotFound);
     }
 
     // tests
     public function testSimpleFile()
     {
-        $json = \UAR\MessageConfig::load($this->simpleFile);
+        $json = \UAR\Emailer\MessageConfig::load($this->simpleFile);
 
         $data = json_decode($json);
 

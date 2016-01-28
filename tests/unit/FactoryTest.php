@@ -23,34 +23,34 @@ class FactoryTest extends \Codeception\TestCase\Test
     }
 
     public function testFactoryConfig() {
-        $config = \UAR\Factory::config();
-        $this->assertInstanceOf("\UAR\Config\Smtp",$config);
+        $config = \UAR\Emailer\Factory::config();
+        $this->assertInstanceOf("\UAR\Emailer\Config\Smtp",$config);
     }
 
     // tests
     public function testMessageReturn()
     {
-        $message = \UAR\Factory::message($this->testEmail1);
-        $this->assertInstanceOf("\UAR\Message",$message);
+        $message = \UAR\Emailer\Factory::message($this->testEmail1);
+        $this->assertInstanceOf("\UAR\Emailer\Message",$message);
 
     }
 
     public function testMessageSend() {
 
-        $message = \UAR\Factory::message($this->testEmail1);
-        $this->assertInstanceOf("\UAR\Message",$message);
+        $message = \UAR\Emailer\Factory::message($this->testEmail1);
+        $this->assertInstanceOf("\UAR\Emailer\Message",$message);
 
-        $result = \UAR\Factory::send($message);
+        $result = \UAR\Emailer\Factory::send($message);
         $this->assertEquals(2,$result);
     }
 
     /**
-     * @expectedException \UAR\Exception\MissingEnvironmentDriverException
+     * @expectedException \UAR\Emailer\Exception\MissingEnvironmentDriverException
      */
     public function testMissingEnvironmentDriverException() {
 
         unset($_ENV['emailer_driver']);
 
-        $config = \UAR\Factory::config();
+        $config = \UAR\Emailer\Factory::config();
     }
 }

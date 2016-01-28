@@ -33,8 +33,8 @@ class ConfigTest extends \Codeception\TestCase\Test
 
         $_ENV['emailer_message_location'] = $this->messageLocation;
 
-        $config = new \UAR\Config\Smtp();
-        $this->assertInstanceOf("\UAR\Config\Smtp",$config);
+        $config = new \UAR\Emailer\Config\Smtp();
+        $this->assertInstanceOf("\UAR\Emailer\Config\Smtp",$config);
 
         // test parameters
         $this->assertEquals("localhost",$config->host);
@@ -59,8 +59,8 @@ class ConfigTest extends \Codeception\TestCase\Test
 
         $_ENV['emailer_message_location'] = $this->messageLocation;
 
-        $config = new \UAR\Config\Sendmail();
-        $this->assertInstanceOf("\UAR\Config\Sendmail",$config);
+        $config = new \UAR\Emailer\Config\Sendmail();
+        $this->assertInstanceOf("\UAR\Emailer\Config\Sendmail",$config);
 
         // test parameters
         $this->assertEquals("/usr/bin/sendmail",$config->binary);

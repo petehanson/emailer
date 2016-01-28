@@ -1,6 +1,6 @@
 <?php
 
-namespace UAR\Config;
+namespace UAR\Emailer\Config;
 
 abstract class Base {
 

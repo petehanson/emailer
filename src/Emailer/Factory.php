@@ -1,12 +1,13 @@
 <?php
 
-namespace UAR;
+namespace UAR\Emailer;
 
-use \UAR\Message;
-use \UAR\Config\Smtp;
-use \UAR\Config\Sendmail;
+use \UAR\Emailer\Message;
+use \UAR\Emailer\MessageConfig;
+use \UAR\Emailer\Config\Smtp;
+use \UAR\Emailer\Config\Sendmail;
 
-use \UAR\Exception\MissingEnvironmentDriverException;
+use \UAR\Emailer\Exception\MissingEnvironmentDriverException;
 
 
 //TODO: Look to make parts of this abstract, so it has to be extended
@@ -39,11 +40,11 @@ class Factory {
         $config = self::config();
         $path = $config->messagePath($messageName);
 
-        $message = new Message(\UAR\MessageConfig::load($path));
+        $message = new Message(MessageConfig::load($path));
         return $message;
     }
 
-    public static function send(\UAR\MessageInterface $message) {
+    public static function send(MessageInterface $message) {
 
         $config = self::config();
         $transport = $config->getTransport();
