@@ -1,0 +1,6 @@
+{
+  "to": "recipient@example.com",
+  "from": "sender@example.com",
+  "subject": "example1 subject",
+  "body": "example1 body"
+}

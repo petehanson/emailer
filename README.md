@@ -1,75 +1,75 @@
-# Design
+# Installation
 
-This outlines the design a bit about how Emailer works.
+You can include this library in your project, via composer:
 
-The concept behind Emailer is that gives a convenient way to handle manage elements of system based emails that need to
-go out. Emails are handled inside a configuration file, where subject, attachments, body messages, etc... are defined.
-
-Along with providing a simple storage mechanism for aspects of an email, Emailer also provides the ability for tag
-replacement in the subject and header. So if you're sending a series of emails, say to a list of recipients, you can
-define a tag to represent the person's first name for example and then you could replace a placeholder tag for
-first name with the actual name to generate a personalized email.
-
-Environment Variables Needed:
-
-General variables:
-emailer_driver = smtp
-emailer_message_location = ../_data/
-
-SMTP variables:
-emailer_smtp_host = localhost
-emailer_smtp_port = 1025
-emailer_smtp_username = user
-emailer_smtp_password = pass
-emailer_smtp_encryption = ssl
-
-Sendmail variables:
-emailer_sendmail_binary = /usr/bin/sendmail
+"uarsoftware/emailer": "@dev"
 
 
+# Environment Configuration For The Transport
+
+The application requires some basic configuration. There are some sample env files that you can reference and use. They
+are located in samples/env/
+
+At a minimum, two environment variables need to be defined:
+
+$_ENV['emailer_driver'] = "smtp|sendmail";
+$_ENV['emailer_message_location'] = "path/to/json/config/files";
+
+emailer_driver handles the driver setting for the Swiftmailer transport. You define "smtp" or "sendmail" to define
+which transport and ultimately config approach is used.  Each config can take in different parameters for through
+then $_ENV variable to config how that transport works. More on this below.
+
+emailer_message_location handles the location of where the JSON config files for each email are located. Ideally, an
+absolute path is given to the location. You can pass in relative paths as well, which could vary, depending on how
+the working directory is set. Ultimately, file_get_contents is used to read the config files. Any mechanisms that
+that function uses to find file references would work in this setting.
+
+The following sections outline the environment variables supported by each config driver:
+
+SMTP:
+
+The following are the supported SMTP specific environment variables.
+
+$_ENV['emailer_smtp_host']
+$_ENV['emailer_smtp_port']
+$_ENV['emailer_smtp_username']
+$_ENV['emailer_smtp_password']
+$_ENV['emailer_smtp_encryption']
+
+These are the same parameters that can be set on a Swift_SmtpTransport object.
+
+Sendmail:
+
+The following are the supported Sendmail specific environment variables.
+
+$_ENV['emailer_sendmail_binary']
+
+This is the same parameter that can be set on a Swift_SendmailTransport object.
 
 
+# Example Usage
 
+See the examples in the examples/ folder.
 
+Here's a quick example for sending through MailCatcher:
 
-An example of use for the public interface:
+require_once("../vendor/autoload.php");
+use \UAR\Emailer\Factory as EmailerFactory;
 
+$_ENV['emailer_driver'] = 'smtp';
+$_ENV['emailer_smtp_host'] = 'localhost';
+$_ENV['emailer_smtp_post'] = 1025;
+$_ENV['emailer_message_location'] = __DIR__;  // use the current folder that this example file is in
 
-$emailerConfig = new \UAR\EmailerConfig();
-$emailerConfig->host = 'localhost';
-$emailerConfig->port = '1025';
+try {
+    $message = EmailerFactory::message("example1");
+    $result = EmailerFactory::send($message);
+} catch (Exception $e) {
+    var_dump($e);
+}
 
+# JSON Message Config Samples
 
-$emailer = \UAR\EmailerFactory::smtpEmailer($emailerConfig);
-
-$email = new \UAR\Email("path/to/email.config.json");
-$email->replace("{{firstName}}",$firstName);
-$email->replace("{{lastName}}",$lastName);
-
-$emailer->send($email);
-
-
-
-
-$messageFactory = new \UAR\MessageFactory("path/to/email.config.json");
-$swiftMailerMessage = $messageFactory->newInstance()
-
-
-or:
-
-$message = \UAR\EmailFactory::message("message.title");
-$message->replace("{{firstName}}",$firstName);
-$message->replace("{{lastName}}",$lastName);
-$result = \UAR\EmailFactory::send($message);
-
-
-what's contained in message:
-
-
-
-
-
-what's contained in send:
-
+See the files located at samples/emails/
 
 

@@ -1,0 +1,19 @@
+{
+  "tags": [],
+  "tagOpening": "{{",
+  "tagClosing": "}}",
+  "to": ["person1@example.com","person2@example.com"],
+  "fromEmail": "sender@example.com",
+  "fromName": "Sender Name",
+  "subject": "This is test email 1 subject line",
+  "bodies": [
+    {
+      "contents": "this is the html text version",
+      "contentType": "text/html"
+    },
+    {
+      "contents": "this is the plain text version",
+      "contentType": "text/plain"
+    }
+  ]
+}

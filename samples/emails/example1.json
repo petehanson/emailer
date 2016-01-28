@@ -3,14 +3,12 @@
   "tagOpening": "{{",
   "tagClosing": "}}",
   "to": [{"email": "person1@example.com", "name": "Person One"}, {"email": "{{replace3}}", "name": "Person Two"}],
-  "cc": "cc1@example.com",
-  "bcc": [{"email": "bcc1@example.com", "name": "BCC Person"}],
   "fromEmail": "{{replace4}}",
   "fromName": "Sender Name",
-  "subject": "This is test ccbcc subject line",
+  "subject": "This is test email 2 subject line {{replace1}}",
   "bodies": [
     {
-      "contents": "This is the test email ccbcc body",
+      "contents": "This is the test email 2 body {{replace2}}",
       "contentType": "text/plain"
     }
   ]
