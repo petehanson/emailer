@@ -10,7 +10,7 @@ use \UAR\Exception\MissingEnvironmentDriverException;
 
 
 //TODO: Look to make parts of this abstract, so it has to be extended
-class EmailerFactory {
+class Factory {
 
     public static function config() {
 

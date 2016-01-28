@@ -22,7 +22,7 @@ class InstantiationTest extends \Codeception\TestCase\Test
         $this->assertInstanceOf("\UAR\Message",$email);
         $this->assertInstanceOf("\UAR\MessageInterface",$email);
 
-        $factory = new \UAR\EmailerFactory();
-        $this->assertInstanceOf("\UAR\EmailerFactory",$factory);
+        $factory = new \UAR\Factory();
+        $this->assertInstanceOf("\UAR\Factory",$factory);
     }
 }
