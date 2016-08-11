@@ -4,7 +4,6 @@ namespace UAR\Emailer;
 
 class MessageConfig {
     public static function load($path) {
-
         if (!file_exists($path)) {
             throw new \Exception("JSON config {$path} not found");
         }

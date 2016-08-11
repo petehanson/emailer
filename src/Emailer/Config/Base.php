@@ -10,7 +10,6 @@ abstract class Base {
 
     public function __construct() {
         $this->setDriver($_ENV['emailer_driver']);
-
         $this->messageLocation = $_ENV['emailer_message_location'];
     }
 

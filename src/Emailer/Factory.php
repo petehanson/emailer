@@ -9,12 +9,9 @@ use \UAR\Emailer\Config\Sendmail;
 
 use \UAR\Emailer\Exception\MissingEnvironmentDriverException;
 
-
-//TODO: Look to make parts of this abstract, so it has to be extended
 class Factory {
 
     public static function config() {
-
         $driver = (isset($_ENV['emailer_driver'])) ? $_ENV['emailer_driver'] : false;
         if ($driver === false) {
             throw new MissingEnvironmentDriverException();
@@ -34,9 +31,7 @@ class Factory {
         return $config;
     }
 
-
     public static function message($messageName) {
-
         $config = self::config();
         $path = $config->messagePath($messageName);
 
@@ -45,11 +40,11 @@ class Factory {
     }
 
     public static function send(MessageInterface $message) {
-
         $config = self::config();
         $transport = $config->getTransport();
 
         $mailer = \Swift_Mailer::newInstance($transport);
         return $mailer->send($message);
+        
     }
 }

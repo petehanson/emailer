@@ -13,13 +13,11 @@ class Smtp extends Base {
     public function __construct() {
         parent::__construct();
 
-
         $this->setProperty($this->host,'emailer_smtp_host');
         $this->setProperty($this->port,'emailer_smtp_port');
         $this->setProperty($this->username,'emailer_smtp_username');
         $this->setProperty($this->password,'emailer_smtp_password');
         $this->setProperty($this->encryption,'emailer_smtp_encryption');
-
     }
 
     public function getTransport() {

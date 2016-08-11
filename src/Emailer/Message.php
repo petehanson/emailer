@@ -5,23 +5,21 @@ namespace UAR\Emailer;
 use Swift_Message;
 use Mustache_Engine;
 
-class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
+class Message extends Swift_Message implements \UAR\Emailer\MessageInterface {
 
     protected $data;
     protected $replacements = array();
     protected $openingTag = '{{';
     protected $closingTag = '}}';
 
-    protected $m;
+    protected $message;
 
     public function __construct($json) {
-
         $this->data = json_decode($json);
 
         if ($this->data === false || $this->data === null) {
             throw new \Exception("JSON passed to the Message object was invalid");
         }
-
 
         $subject = null;
         $body = null;
@@ -29,19 +27,15 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         $charset = null;
 
         parent::__construct($subject,$body,$contentType,$charset);
-        //public function __construct($subject = null, $body = null, $contentType = null, $charset = null)
 
         $this->setupInitialData();
 
-        $this->m = new \Mustache_Engine;
+        $this->message = new Mustache_Engine;
 
         $this->performReplacement();
-
-
     }
 
     protected function setupInitialData() {
-
         if (isset($this->data->tagOpening)) {
             $this->openingTag = $this->data->tagOpening;
         }
@@ -49,8 +43,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         if (isset($this->data->tagClosing)) {
             $this->closingTag = $this->data->tagClosing;
         }
-
-
 
         if (isset($this->data->tags)) {
             $tags = $this->data->tags;
@@ -62,14 +54,9 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
                 $this->replacements[$tag] = "";
             }
         }
-
     }
 
     protected function performReplacement() {
-
-
-        //echo $m->render('Hello, {{ planet }}!', array('planet' => 'world')); // Hello, world!
-
         // get parameters from the config
         $tos = $this->buildRecipients((isset($this->data->to) ? $this->data->to : null));
         $ccs = $this->buildRecipients((isset($this->data->cc) ? $this->data->cc : null));
@@ -78,7 +65,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         $subject = $this->buildSubject();
         $bodies = $this->buildBodies();
 
-
         // do any replacements
         $tos = $this->replaceRecipients($tos);
         $ccs = $this->replaceRecipients($ccs);
@@ -86,7 +72,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         $from = $this->replaceFrom($from);
         $subject = $this->replaceSubject($subject);
         $bodies = $this->replaceBodies($bodies);
-
 
         // set values on Message object
         if ($subject !== null) {
@@ -121,7 +106,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         if ($bccs !== null) {
             $this->setBcc($bccs);
         }
-
     }
 
     public function replace($key,$value) {
@@ -135,13 +119,14 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
         if (isset($this->data->subject) && is_string($this->data->subject)) {
             $subject = $this->data->subject;
         }
+        
         return $subject;
     }
 
     protected function replaceSubject($subject) {
         if ($subject !== null) {
 
-            $subject = $this->m->render($subject,$this->replacements);
+            $subject = $this->message->render($subject,$this->replacements);
         }
 
         return $subject;
@@ -174,7 +159,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
     }
 
     protected function replaceRecipients($recipients) {
-
         if ($recipients !== null) {
 
             $newTo = array();
@@ -184,8 +168,8 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
                 $email = $recipient['email'];
                 $name = $recipient['name'];
 
-                $email = $this->m->render($email,$this->replacements);
-                $name = $this->m->render($name,$this->replacements);
+                $email = $this->message->render($email,$this->replacements);
+                $name = $this->message->render($name,$this->replacements);
 
                 if ($email == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
                     continue;
@@ -210,7 +194,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
     }
 
     protected function buildFrom() {
-
         $email = null;
         $name = null;
 
@@ -234,7 +217,6 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
             $name= $this->data->fromName;
         }
 
-
         if ($email) {
 
             if ($name) {
@@ -249,9 +231,7 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
     }
 
     protected function replaceFrom($from) {
-
         if ($from !== null) {
-
 
             if (is_array($from)) {
                 // from is email => name
@@ -259,8 +239,8 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
                 $newFrom = array();
 
                 foreach ($from as $key=>$value) {
-                    $key = $this->m->render($key,$this->replacements);
-                    $value = $this->m->render($value,$this->replacements);
+                    $key = $this->message->render($key,$this->replacements);
+                    $value = $this->message->render($value,$this->replacements);
 
                     if ($key == "") {  // basically, we'll skip adding an item to the array if we don't have a valid email to use. This can happen on initialization.
                         continue;
@@ -276,7 +256,7 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
                 }
             } else {
                 // from is just an email string
-                $from = $this->m->render($from,$this->replacements);
+                $from = $this->message->render($from,$this->replacements);
             }
         }
 
@@ -304,12 +284,10 @@ class Message extends \Swift_Message implements \UAR\Emailer\MessageInterface {
     protected function replaceBodies($bodies) {
         if ($bodies !== null) {
             foreach ($bodies as &$body) {
-
-                $body['content'] = $this->m->render($body['content'],$this->replacements);
+                $body['content'] = $this->message->render($body['content'],$this->replacements);
             }
         }
 
         return $bodies;
     }
-
 }
