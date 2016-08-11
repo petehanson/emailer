@@ -12,8 +12,10 @@ are located in samples/env/
 
 At a minimum, two environment variables need to be defined:
 
-$_ENV['emailer_driver'] = "smtp|sendmail";
+```
+$_ENV['emailer_driver'] = "smtp|sendmail";  
 $_ENV['emailer_message_location'] = "path/to/json/config/files";
+```
 
 emailer_driver handles the driver setting for the Swiftmailer transport. You define "smtp" or "sendmail" to define
 which transport and ultimately config approach is used.  Each config can take in different parameters for through
@@ -30,11 +32,13 @@ SMTP:
 
 The following are the supported SMTP specific environment variables.
 
-$_ENV['emailer_smtp_host']
-$_ENV['emailer_smtp_port']
-$_ENV['emailer_smtp_username']
-$_ENV['emailer_smtp_password']
+```
+$_ENV['emailer_smtp_host']  
+$_ENV['emailer_smtp_port']  
+$_ENV['emailer_smtp_username']  
+$_ENV['emailer_smtp_password']  
 $_ENV['emailer_smtp_encryption']
+```
 
 These are the same parameters that can be set on a Swift_SmtpTransport object.
 
@@ -53,20 +57,22 @@ See the examples in the examples/ folder.
 
 Here's a quick example for sending through MailCatcher:
 
-require_once("../vendor/autoload.php");
+```
+require_once("../vendor/autoload.php");  
 use \UAR\Emailer\Factory as EmailerFactory;
 
-$_ENV['emailer_driver'] = 'smtp';
-$_ENV['emailer_smtp_host'] = 'localhost';
-$_ENV['emailer_smtp_post'] = 1025;
-$_ENV['emailer_message_location'] = __DIR__;  // use the current folder that this example file is in
-
-try {
+$_ENV['emailer_driver'] = 'smtp';  
+$_ENV['emailer_smtp_host'] = 'localhost';  
+$_ENV['emailer_smtp_post'] = 1025;  
+$_ENV['emailer_message_location'] = __DIR__;  // use the current folder that this example file is in  
+  
+try {  
     $message = EmailerFactory::message("example1");
     $result = EmailerFactory::send($message);
 } catch (Exception $e) {
     var_dump($e);
 }
+```
 
 # JSON Message Config Samples
 
